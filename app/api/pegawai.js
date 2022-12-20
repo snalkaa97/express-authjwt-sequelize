@@ -105,5 +105,34 @@ module.exports = {
                 })
             })
         })
+    },
+
+    delete(req, res){
+        return Pegawai.findByPk(req.params.id)
+        .then(pegawai=>{
+            if(!pegawai){
+                return res.status(404).send({
+                    status_response: 'Bad Request',
+                    errors: 'Pegawai Not Found',
+                })
+            }
+            if(pegawai.id != req.params.id){
+                return res.status(400).send({
+                    status_response: 'Bad Request',
+                    errors: 'Pegawai Not Found',
+                })
+            }
+            return pegawai.destroy()
+            .then((doc)=>{
+                res.status(200).send({status:'success'})
+            })
+            .catch((error)=>{
+                res.status(400).send({
+                  status_response: 'Bad Request',
+                  errors: error
+                })
+            })
+
+        })
     }
 }

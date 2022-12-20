@@ -5,6 +5,7 @@ const User = require('../models').User;
 module.exports = {
 	verifyToken(req, res, next) {
 		let tokenHeader = req.headers['x-access-token'];
+        console.log(tokenHeader);
 
         if(tokenHeader==undefined){
             return res.status(500).send({

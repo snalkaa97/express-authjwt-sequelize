@@ -30,5 +30,11 @@ module.exports = function(app){
         // verifyJwtTokenController.isAdmin
     ], pegawaiController.update);
     
+    app.delete('/api/pegawai/:id', 
+    [
+        verifyJwtTokenController.verifyToken, 
+        // verifyJwtTokenController.isAdmin
+    ], pegawaiController.delete);
+    
     
 }
