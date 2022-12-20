@@ -23,5 +23,12 @@ module.exports = function(app){
         verifyJwtTokenController.verifyToken, 
         // verifyJwtTokenController.isAdmin
     ], pegawaiController.add);
+
+    app.put('/api/pegawai/:id', 
+    [
+        verifyJwtTokenController.verifyToken, 
+        // verifyJwtTokenController.isAdmin
+    ], pegawaiController.update);
+    
     
 }

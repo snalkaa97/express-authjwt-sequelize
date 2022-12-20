@@ -9,7 +9,7 @@ module.exports = {
             if(!doc){
                 return res.status(404).send({
                     status_response: 'Not Found',
-                    errors: 'Status Not Found',
+                    errors: 'Pegawai Not Found',
                 });
             }
             const pegawai = {
@@ -60,7 +60,7 @@ module.exports = {
         .then((doc) => {
             console.log(doc.dataValues);
             const results = {
-                data: doc.dataValues,
+                data: doc,
                 status: 'success'
             }
             res.status(200).send(results);
@@ -74,10 +74,36 @@ module.exports = {
     },
 
     //update
-    // update(req, res){
-    //     return Pegawai.findByPk(req.params.id,{})
-    //     .then(pegawai =>{
-
-    //     })
-    // }
+    update(req, res){
+        return Pegawai.findByPk(req.params.id,{})
+        .then(pegawai =>{
+            if(!pegawai){
+                return res.status(404).send({
+                    status_response: 'Bad Request',
+                    errors: 'Pegawai Not Found',
+                })
+            }
+            console.log(pegawai);
+            if(pegawai.id != req.params.id){
+                return res.status(400).send({
+                    status_response: 'Bad Request',
+                    errors: 'Pegawai Not Found',
+                })
+            }
+            return pegawai.update(req.body)
+            .then((doc)=>{
+                const results = {
+                    data: doc.dataValues,
+                    status:'success'
+                }
+                res.status(200).send(results);
+            })
+            .catch((error)=>{
+                res.status(400).send({
+                  status_response: 'Bad Request',
+                  errors: error
+                })
+            })
+        })
+    }
 }
