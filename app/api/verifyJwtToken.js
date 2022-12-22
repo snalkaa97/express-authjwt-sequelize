@@ -40,7 +40,6 @@ module.exports = {
 				});
 			}
 			req.userId = parseInt(decoded.id);
-			console.log("USER_ID", req.userId);
 			next();
 		});
 	},

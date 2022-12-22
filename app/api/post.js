@@ -1,25 +1,31 @@
 const Posts = require("../models").Post;
+const db = require("../models");
+const { QueryTypes } = require("sequelize");
 
 module.exports = {
-	list(req, res) {
-		return Posts.findAll({
-			order: [["createdAt", "DESC"]],
-		})
-			.then((posts) => {
-				const results = {
-					status: "success",
-					data: posts,
-					count: posts.length,
-					errors: null,
-				};
-				res.status(200).send(results);
-			})
-			.catch((err) => {
-				res.status(400).send({
-					status_response: "Bad Request",
-					errors: err,
-				});
-			});
+	async list(req, res) {
+		const [results, metadata] = await db.sequelize.query(
+			`SELECT "Users".name as author_by, "Posts".title, "Posts".desc FROM "Posts" JOIN "Users" ON "Posts".user_id::varchar = "Users".id`
+		);
+		// console.log(results);
+		const data = {
+			status: "success",
+			data: results,
+			count: results.length,
+			errors: null,
+		};
+		return res.status(200).send(data);
+		// return Posts.findAll({
+		// 	order: [["createdAt", "DESC"]],
+		// })
+		// 	.then((posts) => {
+		// 	})
+		// 	.catch((err) => {
+		// 		res.status(400).send({
+		// 			status_response: "Bad Request",
+		// 			errors: err,
+		// 		});
+		// 	});
 	},
 
 	add(req, res) {
