@@ -1,23 +1,23 @@
 {
-  "development": {
-    "username": "postgres",
-    "password": "password",
-    "database": "backend-express",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "test": {
-    "username": "postgres",
-    "password": "password",
-    "database": "backend-express",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
-    "username": "postgres",
-    "password": "password",
-    "database": "backend-express",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  }
+	"development": {
+		"username": "postgres",
+		"password": "password2020!!",
+		"database": "backend-express",
+		"host": "127.0.0.1",
+		"dialect": "postgres"
+	},
+	"test": {
+		"username": "postgres",
+		"password": "password2020!!",
+		"database": "backend-express",
+		"host": "127.0.0.1",
+		"dialect": "postgres"
+	},
+	"production": {
+		"username": "postgres",
+		"password": "password",
+		"database": "backend-express2020!!",
+		"host": "127.0.0.1",
+		"dialect": "postgres"
+	}
 }

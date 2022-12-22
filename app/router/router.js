@@ -1,40 +1,24 @@
-const verifySignUpController = require('../api').verifySignUp;
-const verifySignController = require('../api').verifySign;
-const pegawaiController = require('../api').pegawai;
-const verifyJwtTokenController = require('../api').verifyJwtToken;
+const verifySignUpController = require("../api").verifySignUp;
+const verifySignController = require("../api").verifySign;
+const verifyJwtTokenController = require("../api").verifyJwtToken;
 
-module.exports = function(app){
+const pegawaiRoute = require("./pegawai");
+const postRoute = require("./post");
 
-    app.post('/api/auth/signup',
-    [verifySignUpController.checkDuplicateUserNameOrEmail, verifySignUpController.checkRolesExisted], verifySignController.signup);
+module.exports = function (app) {
+	app.post(
+		"/api/auth/signup",
+		[
+			verifySignUpController.checkDuplicateUserNameOrEmail,
+			verifySignUpController.checkRolesExisted,
+		],
+		verifySignController.signup
+	);
+	app.post("/api/auth/signin", verifySignController.signin);
 
-	app.post('/api/auth/signin', verifySignController.signin);
+	//pegawai
+	app.use("/api/pegawai", pegawaiRoute);
 
-    //pegawai
-
-    app.get('/api/pegawai', 
-    [
-        verifyJwtTokenController.verifyToken, 
-        // verifyJwtTokenController.isAdmin
-    ], pegawaiController.list);
-
-    app.post('/api/pegawai', 
-    [
-        verifyJwtTokenController.verifyToken, 
-        // verifyJwtTokenController.isAdmin
-    ], pegawaiController.add);
-
-    app.put('/api/pegawai/:id', 
-    [
-        verifyJwtTokenController.verifyToken, 
-        // verifyJwtTokenController.isAdmin
-    ], pegawaiController.update);
-    
-    app.delete('/api/pegawai/:id', 
-    [
-        verifyJwtTokenController.verifyToken, 
-        // verifyJwtTokenController.isAdmin
-    ], pegawaiController.delete);
-    
-    
-}
+	//posts
+	app.use("/api/post", postRoute);
+};
