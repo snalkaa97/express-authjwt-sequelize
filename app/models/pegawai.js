@@ -23,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     unit_kerja: DataTypes.STRING
   }, {
     sequelize,
+    freezeTableName: true,
     modelName: 'Pegawai',
+    tableName: 't_pegawai'
+    // tableName: 't_pegawai' CONTOH BUAT CUSTOM TABLE NO SINGULAR
   });
   return Pegawai;
 };

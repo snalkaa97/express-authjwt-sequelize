@@ -1,11 +1,35 @@
 const Posts = require("../models").Post;
+const User = require("../models").User;
 const db = require("../models");
 const { QueryTypes } = require("sequelize");
 
 module.exports = {
 	async list(req, res) {
+		return Posts.findAll({
+			// include: [User], ini semua attribute table user ditampilkan
+			include: [
+				{
+					model: User,
+					attributes: {
+						exclude: ['password', 'createdAt', 'updatedAt']
+					}
+				}
+			],
+			attributes: ['id', 'title', 'desc']
+		})
+		.then((response)=>{
+			const data = {
+				status: "success",
+				data: response,
+				count: response.length,
+				errors: null,
+			};
+			return res.status(200).send(data);
+		})
+
+		//ini contoh Raw Query
 		const [results, metadata] = await db.sequelize.query(
-			`SELECT "Users".name as author_by, "Posts".title, "Posts".desc FROM "Posts" JOIN "Users" ON "Posts".user_id::varchar = "Users".id`
+			`SELECT "Users".name as author_by, "Posts".title, "Posts".desc FROM "Posts" JOIN "Users" ON "Posts".user_id = "Users".id`
 		);
 		// console.log(results);
 		const data = {
