@@ -21,6 +21,21 @@ route.post(
 	postController.add
 );
 
+route.put(
+	"/:id",
+	[
+        verifyJwtTokenController.verifyToken,
+	],
+	postController.update
+);
+
+route.delete(
+	"/:id",
+	[
+        verifyJwtTokenController.verifyToken,
+	],
+	postController.delete
+);
 // route.put(
 // 	"/:id",
 // 	[

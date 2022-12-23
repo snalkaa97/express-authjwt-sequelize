@@ -41,15 +41,15 @@ module.exports = {
 			order: [["createdAt", "DESC"]],
 		})
 			.then((docs) => {
-				const statuses = {
-					status_response: "OK",
+				const pegawai = {
+					status: "success",
 					count: docs.length,
-					statuses: docs.map((doc) => {
+					data: docs.map((doc) => {
 						return doc;
 					}),
 					errors: null,
 				};
-				res.status(200).send(statuses);
+				res.status(200).send(pegawai);
 			})
 			.catch((error) => {
 				res.status(400).send({

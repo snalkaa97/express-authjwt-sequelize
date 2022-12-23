@@ -44,7 +44,7 @@ module.exports = {
         // console.log(req.body);
         return User.findOne({
             where:{
-                id:req.body.id
+                email:req.body.email
             }
         })
         .then(user=>{
@@ -58,11 +58,15 @@ module.exports = {
                     errors: "User Not Found."
                 });
             }
-            var token = 'Bearer ' + jwt.sign({
+            var token = 'Bearer ' + jwt.sign(
+                {
                 id: user.id
-            }, config.secret, {
+                }, 
+                config.secret, 
+                {
                 expiresIn: 86400 //24h expired
-            });
+                }
+            );
 
             console.log(token);
 

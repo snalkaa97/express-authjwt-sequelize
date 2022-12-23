@@ -49,4 +49,68 @@ module.exports = {
 				});
 			});
 	},
+
+	update(req, res){
+		return Posts.findByPk(req.params.id)
+		.then((post) => {
+			if(!post){
+				return res.status(400).send({
+					status_response: "Bad Request",
+					errors: "Post not found",
+				})
+			}
+			if(post.id != req.params.id){
+				return res.status(400).send({
+					status_response: "Bad Request",
+					errors: "Post not found",
+				})
+			}
+			return post.update(req.body)
+			.then((updatedPost) => {
+                const results = {
+					data: updatedPost,
+                    status: "success",
+				}
+				res.status(200).send(results);
+			})
+			.catch((err) => {
+				res.status(400).send({
+					status_response: "Bad Request",
+                    errors: err,
+				})
+			})
+		})
+	},
+
+	delete(req, res){
+		return Posts.findByPk(req.params.id)
+		.then((post) => {
+			if(!post){
+				return res.status(400).send({
+					status_response: "Bad Request",
+					errors: "Post not found",
+				})
+			}
+			if(post.id != req.params.id){
+				return res.status(400).send({
+					status_response: "Bad Request",
+					errors: "Post not found",
+				})
+			}
+			return post.destroy()
+			.then((destroy) => {
+                const results = {
+                    status: "success",
+				}
+				res.status(200).send(results);
+			})
+			.catch((err) => {
+				res.status(400).send({
+					status_response: "Bad Request",
+                    errors: err,
+				})
+			})
+		})
+	},
+	
 };

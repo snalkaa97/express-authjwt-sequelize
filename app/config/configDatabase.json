@@ -1,14 +1,15 @@
+
 {
 	"development": {
 		"username": "postgres",
-		"password": "password2020!!",
+		"password": "password",
 		"database": "backend-express",
 		"host": "127.0.0.1",
 		"dialect": "postgres"
 	},
 	"test": {
 		"username": "postgres",
-		"password": "password2020!!",
+		"password": "password",
 		"database": "backend-express",
 		"host": "127.0.0.1",
 		"dialect": "postgres"
