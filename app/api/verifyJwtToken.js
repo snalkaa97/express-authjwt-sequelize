@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/configRoles.js");
 const User = require("../models").User;
+const Role = require("../models").Role;
 
 module.exports = {
 	verifyToken(req, res, next) {
@@ -45,23 +46,52 @@ module.exports = {
 	},
 
 	isAdmin(req, res, next) {
-		User.findByPk(req.userId).then((user) => {
-			user.getRoles().then((roles) => {
-				for (let i = 0; i < roles.length; i++) {
-					console.log(roles[i].name);
-					if (roles[i].name.toUpperCase() === "ADMIN") {
-						next();
-						return;
+		return User.findOne({
+			include: [
+				{
+					model: Role,
+					attributes: ['id','name'],
+					where: {
+						name: 'ADMIN'
 					}
 				}
+			],
+			where: {
+                id: req.userId,
+            },
+		})
+		.then((user)=>{
+			console.log(user);
+			if(!user){
 				res.status(403).send({
 					auth: false,
-					message: "Error",
 					message: "Require Admin Role",
 				});
-				return;
-			});
+				return; 
+			}
+			next();
+			return;
+		})
+		.catch((err)=>{
+			console.error(err);
 		});
+		// User.findByPk(req.userId).then((user) => {
+		// 	user.getRoles().then((roles) => {
+		// 		for (let i = 0; i < roles.length; i++) {
+		// 			console.log(roles[i].name);
+		// 			if (roles[i].name.toUpperCase() === "ADMIN") {
+		// 				next();
+		// 				return;
+		// 			}
+		// 		}
+		// 		res.status(403).send({
+		// 			auth: false,
+		// 			message: "Error",
+		// 			message: "Require Admin Role",
+		// 		});
+		// 		return;
+		// 	});
+		// });
 	},
 
 	isPmOrAdmin(req, res, next) {

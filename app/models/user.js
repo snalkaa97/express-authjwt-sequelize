@@ -14,13 +14,18 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Post, {
         foreignKey: 'user_id',
       });
+
+      User.belongsTo(models.Role,{
+        foreignKey: 'role_id',
+      })
     }
   }
   User.init({
     // id: DataTypes.STRING,
     name: DataTypes.STRING,
     email: DataTypes.STRING,
-    password: DataTypes.STRING
+    password: DataTypes.STRING,
+    role_id: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'User',

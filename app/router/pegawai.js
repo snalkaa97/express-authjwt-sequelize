@@ -7,7 +7,7 @@ route.get(
 	"/",
 	[
 		verifyJwtTokenController.verifyToken,
-		// verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdmin
 	],
 	pegawaiController.list
 );

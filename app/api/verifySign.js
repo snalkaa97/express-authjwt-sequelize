@@ -8,31 +8,55 @@ const config = require('../config/configRoles');
 
 module.exports = {
     signup(req, res){
-        return User.create({
-            name:req.body.name,
-            id:req.body.id,
-            email:req.body.email,
-            password: bcrypt.hashSync(req.body.password, 8)
+        Role.findOne({
+            where: {
+                name: req.body.role
+            },
+            attributes: ['id']
         })
-        .then(user=>{
-            // Role.findAll({
-            //     where:{
-            //         name:{
-            //             [Op.ord]:req.body.roles
-            //         }
-            //     }
-            
-            res.status(200).send({
-                auth: true,
-                id: req.body.id,
-                message: "User registered successfully.",
-                error: null,
+        .then((role)=>{
+            if(!role){
+                return res.status(200).send({
+                    auth: false,
+                    id: req.body.id,
+                    message: 'Role not found',
+                })
+            }
+            console.log(role.dataValues.id);
+            return User.create({
+                name:req.body.name,
+                id:req.body.id,
+                email:req.body.email,
+                password: bcrypt.hashSync(req.body.password, 8),
+                role_id: role.dataValues.id
             })
-            return;
-            // })
-
-        }).catch(err => {
-            res.status(500).send({
+            .then(user=>{
+                // Role.findAll({
+                //     where:{
+                //         name:{
+                //             [Op.ord]:req.body.roles
+                //         }
+                //     }
+                
+                res.status(200).send({
+                    auth: true,
+                    id: req.body.id,
+                    message: "User registered successfully.",
+                    error: null,
+                })
+                return;
+                // })
+    
+            }).catch(err => {
+                res.status(500).send({
+                    auth: false,
+                    message: "Error",
+                    errors: err,
+                })
+            })
+        })
+        .catch((err)=>{
+           return res.status(500).send({
                 auth: false,
                 message: "Error",
                 errors: err,

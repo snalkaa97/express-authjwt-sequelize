@@ -34,7 +34,7 @@ module.exports = {
 		const pegawais = await db.sequelize.query(`SELECT * FROM "Pegawais"`, {
 			type: QueryTypes.SELECT,
 		});
-		console.log(pegawais);
+		// console.log(pegawais);
 		return Pegawai.findAll({
 			limit: 10,
 			include: [],
@@ -44,9 +44,7 @@ module.exports = {
 				const pegawai = {
 					status: "success",
 					count: docs.length,
-					data: docs.map((doc) => {
-						return doc;
-					}),
+					data: docs,
 					errors: null,
 				};
 				res.status(200).send(pegawai);
