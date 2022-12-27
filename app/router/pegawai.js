@@ -7,7 +7,7 @@ route.get(
 	"/",
 	[
 		verifyJwtTokenController.verifyToken,
-		verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdminAndUser
 	],
 	pegawaiController.list
 );
@@ -16,7 +16,7 @@ route.post(
 	"/",
 	[
 		verifyJwtTokenController.verifyToken,
-		// verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdmin
 	],
 	pegawaiController.add
 );
@@ -25,7 +25,7 @@ route.put(
 	"/:id",
 	[
 		verifyJwtTokenController.verifyToken,
-		// verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdmin
 	],
 	pegawaiController.update
 );
@@ -34,7 +34,7 @@ route.delete(
 	"/:id",
 	[
 		verifyJwtTokenController.verifyToken,
-		// verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdmin
 	],
 	pegawaiController.delete
 );

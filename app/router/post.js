@@ -7,7 +7,7 @@ route.get(
 	"/",
 	[
 		verifyJwtTokenController.verifyToken,
-		// verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdminAndUser
 	],
 	postController.list
 );
@@ -16,7 +16,7 @@ route.post(
 	"/",
 	[
 		verifyJwtTokenController.verifyToken,
-		// verifyJwtTokenController.isAdmin
+		verifyJwtTokenController.isAdmin
 	],
 	postController.add
 );
@@ -25,6 +25,7 @@ route.put(
 	"/:id",
 	[
         verifyJwtTokenController.verifyToken,
+		verifyJwtTokenController.isAdmin,
 	],
 	postController.update
 );
@@ -33,6 +34,7 @@ route.delete(
 	"/:id",
 	[
         verifyJwtTokenController.verifyToken,
+		verifyJwtTokenController.isAdmin,
 	],
 	postController.delete
 );

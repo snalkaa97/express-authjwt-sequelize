@@ -39,27 +39,27 @@ module.exports = {
     }, 
 
     checkRolesExisted(req, res, next) {
-        // for(let i = 0; i < req.body.roles.length; i++) {
-        //     console.log(req.body.roles[i]);
-        //     if(!ROLEs.includes(req.body.roles[i].toUpperCase())) {
-        //         res.status(400).send({
-		// 			auth: false,
-		// 			id: req.body.id,
-		// 			message: "Error",
-		// 			errors: "Does NOT exist Role = " + req.body.roles[i]
-		// 		});
-		// 		return;
-        //     }
-        // }
-        if(!ROLEs.includes(req.body.role.toUpperCase())) {
-            res.status(400).send({
-                auth: false,
-                id: req.body.id,
-                message: "Error",
-                errors: "Does NOT exist Role = " + req.body.role
-            });
-            return;
+        for(let i = 0; i < req.body.roles.length; i++) {
+            console.log(req.body.roles[i]);
+            if(!ROLEs.includes(req.body.roles[i].toUpperCase())) {
+                res.status(400).send({
+					auth: false,
+					id: req.body.id,
+					message: "Error",
+					errors: "Does NOT exist Role = " + req.body.roles[i]
+				});
+				return;
+            }
         }
+        // if(!ROLEs.includes(req.body.role.toUpperCase())) {
+        //     res.status(400).send({
+        //         auth: false,
+        //         id: req.body.id,
+        //         message: "Error",
+        //         errors: "Does NOT exist Role = " + req.body.role
+        //     });
+        //     return;
+        // }
         next();
     }
 }
