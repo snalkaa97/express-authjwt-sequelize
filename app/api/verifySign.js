@@ -88,13 +88,27 @@ module.exports = {
                     auth: false,
                     id: req.body.id,
                     accessToken: null,
+                    userInfo: null,
                     message: "Error",
                     errors: "User Not Found."
                 });
             }
+            var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+				if (!passwordIsValid) {
+					return res.status(200).send({
+						auth: false,
+						id: req.body.id,
+						accessToken: null,
+						userInfo: null,
+						message: "Error",
+						errors: "Invalid Password!"
+					});
+				}
+            console.log(user.email);
             var token = 'Bearer ' + jwt.sign(
                 {
-                id: user.id
+                id: user.id,
+                email: user.email
                 }, 
                 config.secret, 
                 {
@@ -108,11 +122,16 @@ module.exports = {
                 auth: true,
                 id: req.body.id,
                 accessToken: token,
+                userInfo: {
+                    name: user.name,
+                    email: user.email,
+                },
                 message: "Error",
                 errors: null
             });
         })
         .catch(err=>{
+            console.log(err);
             res.status(500).send({
                 auth: false,
                 id: req.body.id,
