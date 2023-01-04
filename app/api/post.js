@@ -108,11 +108,27 @@ module.exports = {
 			}
 			return post.update(req.body)
 			.then((updatedPost) => {
-                const results = {
-					data: updatedPost,
-                    status: "success",
-				}
-				res.status(200).send(results);
+				Posts.findOne({
+					include: [
+						{
+							model: User,
+							attributes: {
+								exclude: ['password', 'createdAt', 'updatedAt']
+							}
+						}
+					],
+					attributes: ['id', 'title', 'desc'],
+					where:{
+						id: updatedPost.id
+					}
+				})
+				.then((post)=>{
+					const results = {
+						data: post,
+						status: "success",
+					}
+					res.status(200).send(results);
+				})
 			})
 			.catch((err) => {
 				res.status(400).send({
