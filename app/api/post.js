@@ -2,6 +2,7 @@ const Posts = require("../models").Post;
 const User = require("../models").User;
 const db = require("../models");
 const { QueryTypes } = require("sequelize");
+const Op = db.Sequelize.Op;
 
 module.exports = {
 	async list(req, res) {
@@ -60,11 +61,27 @@ module.exports = {
 			user_id: req.userId,
 		})
 			.then((post) => {
-				const results = {
-					data: post,
-					status: "success",
-				};
-				res.status(200).send(results);
+				Posts.findOne({
+					include: [
+						{
+							model: User,
+							attributes: {
+								exclude: ['password', 'createdAt', 'updatedAt']
+							}
+						}
+					],
+					attributes: ['id', 'title', 'desc'],
+					where:{
+						id: post.id
+					}
+				})
+				.then((posts)=>{
+					const results = {
+						data: posts,
+						status: "success",
+					};
+					res.status(200).send(results);
+				})
 			})
 			.catch((err) => {
 				res.status(400).send({

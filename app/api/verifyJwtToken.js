@@ -80,7 +80,7 @@ module.exports = {
 		.then((user)=>{
 			console.log(user);
 			if(user.length<=0){
-				res.status(403).send({
+				res.status(200).send({
 					auth: false,
 					message: "Require Admin Role",
 				});
