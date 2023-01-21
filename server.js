@@ -1,19 +1,21 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const db = require("./app/models");
 const logger = require("morgan");
 
 const app = express();
 
-app.use(cors({
-	origin: function(origin, callback){
-		return callback(null, true);
-	  },
-	optionsSuccessStatus: 200,
-	credentials: true
-}))
+app.use(
+	cors({
+		origin: function (origin, callback) {
+			return callback(null, true);
+		},
+		optionsSuccessStatus: 200,
+		credentials: true,
+	})
+);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(
@@ -58,10 +60,5 @@ function create_roles() {
 	db.Role.create({
 		id: 2,
 		name: "ADMIN",
-	});
-
-	db.Role.create({
-		id: 3,
-		name: "PM",
 	});
 }

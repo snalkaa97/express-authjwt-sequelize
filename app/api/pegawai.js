@@ -2,31 +2,49 @@ const Pegawai = require("../models").Pegawai;
 const db = require("../models");
 const { QueryTypes } = require("sequelize");
 
+const redis = require("redis");
+
+let redisClient;
+
+(async () => {
+	redisClient = redis.createClient();
+
+	redisClient.on("error", (error) => console.error(`Error : ${error}`));
+
+	await redisClient.connect();
+})();
 module.exports = {
-	getById(req, res) {
-		return Pegawai.findByPk(req.params.id, {
-			include: [],
-		})
-			.then((doc) => {
-				if (!doc) {
+	async getById(req, res) {
+		const id = req.params.id;
+		let results;
+		let isCached = false;
+		try {
+			const cacheResults = await redisClient.get(id);
+			if (cacheResults) {
+				isCached = true;
+				results = JSON.parse(cacheResults);
+			} else {
+				results = await Pegawai.findByPk(req.params.id);
+				if (!results) {
 					return res.status(404).send({
 						status_response: "Not Found",
 						errors: "Pegawai Not Found",
 					});
+				} else {
+					await redisClient.set(id, JSON.stringify(results));
 				}
-				const pegawai = {
-					pegawai_response: "Created",
-					pegawai: doc,
-					errors: null,
-				};
-				return res.status(200).send(pegawai);
-			})
-			.catch((error) => {
-				res.status(400).send({
-					pegawai_response: "Bad Request",
-					errors: error,
-				});
+			}
+			res.send({
+				fromCache: isCached,
+				data: results,
 			});
+		} catch (error) {
+			console.log(error);
+			res.status(400).send({
+				pegawai_response: "Bad Request",
+				errors: error,
+			});
+		}
 	},
 
 	async list(req, res) {
@@ -85,7 +103,6 @@ module.exports = {
 					errors: "Pegawai Not Found",
 				});
 			}
-			console.log(pegawai);
 			if (pegawai.id != req.params.id) {
 				return res.status(400).send({
 					status_response: "Bad Request",

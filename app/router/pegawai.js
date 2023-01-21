@@ -5,37 +5,31 @@ const verifyJwtTokenController = require("../api").verifyJwtToken;
 
 route.get(
 	"/",
-	[
-		verifyJwtTokenController.verifyToken,
-		verifyJwtTokenController.isAdminAndUser
-	],
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
 	pegawaiController.list
+);
+
+route.get(
+	"/:id",
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
+	pegawaiController.getById
 );
 
 route.post(
 	"/",
-	[
-		verifyJwtTokenController.verifyToken,
-		verifyJwtTokenController.isAdmin
-	],
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
 	pegawaiController.add
 );
 
 route.put(
 	"/:id",
-	[
-		verifyJwtTokenController.verifyToken,
-		verifyJwtTokenController.isAdmin
-	],
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
 	pegawaiController.update
 );
 
 route.delete(
 	"/:id",
-	[
-		verifyJwtTokenController.verifyToken,
-		verifyJwtTokenController.isAdmin
-	],
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
 	pegawaiController.delete
 );
 
