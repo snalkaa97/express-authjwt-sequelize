@@ -3,6 +3,7 @@ const db = require("../models");
 const { QueryTypes } = require("sequelize");
 
 const redis = require("redis");
+const { promisify } = require("util");
 
 let redisClient;
 
@@ -13,13 +14,16 @@ let redisClient;
 
 	await redisClient.connect();
 })();
+
+// const getAsync = promisify(redisClient.get).bind(redisClient);
+// console.log(getAsync);
 module.exports = {
 	async getById(req, res) {
 		const id = req.params.id;
 		let results;
 		let isCached = false;
 		try {
-			const cacheResults = await redisClient.get(id);
+			const cacheResults = await redisClient.get(`pegawais:${id}`);
 			if (cacheResults) {
 				isCached = true;
 				results = JSON.parse(cacheResults);
@@ -31,7 +35,7 @@ module.exports = {
 						errors: "Pegawai Not Found",
 					});
 				} else {
-					await redisClient.set(id, JSON.stringify(results));
+					await redisClient.set(`pegawais:${id}`, JSON.stringify(results));
 				}
 			}
 			res.send({
@@ -49,41 +53,46 @@ module.exports = {
 
 	async list(req, res) {
 		//contoh raw query
-		const pegawais = await db.sequelize.query(`SELECT * FROM "Pegawais"`, {
-			type: QueryTypes.SELECT,
-		});
+		// const pegawais = await db.sequelize.query(`SELECT * FROM "Pegawais"`, {
+		// 	type: QueryTypes.SELECT,
+		// });
 		// console.log(pegawais);
-		return Pegawai.findAll({
-			limit: 10,
-			include: [],
-			order: [["createdAt", "DESC"]],
-		})
-			.then((docs) => {
-				const pegawai = {
-					status: "success",
-					count: docs.length,
-					data: docs,
-					errors: null,
-				};
-				res.status(200).send(pegawai);
-			})
-			.catch((error) => {
-				res.status(400).send({
-					status_response: "Bad Request",
-					errors: error,
-				});
+		let isCached = false;
+		const cachedData = JSON.parse(await redisClient.get("pegawais:all"));
+		const pegawais = cachedData ? cachedData : await Pegawai.findAll();
+		if(cachedData){
+			isCached = true;
+		} else {
+			await redisClient.set("pegawais:all", JSON.stringify(pegawais));
+		}
+		if(!pegawais){
+			return res.status(404).send({
+				status_response: "Not Found",
+				errors: "Pegawai Not Found",
 			});
+		}
+		const pegawai = {
+			status: "success",
+			isCached: isCached,
+			count: pegawais.length,
+			data: pegawais,
+			errors: null,
+		};
+		res.status(200).send(pegawai);
 	},
 
 	add(req, res) {
 		const pegawai = Pegawai.create(req.body);
 		return pegawai
-			.then((doc) => {
+			.then(async (doc) => {
 				console.log(doc.dataValues);
 				const results = {
 					data: doc,
 					status: "success",
 				};
+				//updaate cachce
+				const pegawais = await Pegawai.findAll();
+				await redisClient.set("pegawais:all", JSON.stringify(pegawais));
 				res.status(200).send(results);
 			})
 			.catch((error) => {
@@ -111,14 +120,18 @@ module.exports = {
 			}
 			return pegawai
 				.update(req.body)
-				.then((doc) => {
+				.then(async(doc) => {
 					const results = {
 						data: doc.dataValues,
 						status: "success",
 					};
+					const pegawais = await Pegawai.findAll();
+					await redisClient.set("pegawais:all", JSON.stringify(pegawais));
+					redisClient.set(`pegawais:${doc.dataValues.id}`, JSON.stringify(doc.dataValues));
 					res.status(200).send(results);
 				})
 				.catch((error) => {
+					console.log(error);
 					res.status(400).send({
 						status_response: "Bad Request",
 						errors: error,
@@ -143,7 +156,9 @@ module.exports = {
 			}
 			return pegawai
 				.destroy()
-				.then((doc) => {
+				.then(async(doc) => {
+					const pegawais = await Pegawai.findAll();
+					await redisClient.set("pegawais:all", JSON.stringify(pegawais));
 					res.status(200).send({ status: "success" });
 				})
 				.catch((error) => {
