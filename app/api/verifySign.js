@@ -101,7 +101,7 @@ module.exports = {
 					user.password
 				);
 				if (!passwordIsValid) {
-					return res.status(200).send({
+					return res.status(500).send({
 						auth: false,
 						id: req.body.id,
 						accessToken: null,
