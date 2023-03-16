@@ -26,33 +26,44 @@ module.exports = {
 						message: "Role not found",
 					});
 				}
-				role.map((x) => {
-					UserRole.create({
-						user_id: req.body.id,
-						role_id: x.id,
-					});
-				});
-
-				console.log(role);
 				// console.log(role.dataValues.id);
 				return User.create({
 					name: req.body.name,
-					id: req.body.id,
 					email: req.body.email,
 					password: bcrypt.hashSync(req.body.password, 8),
 					// role_id: role.dataValues.id
 				})
 					.then((user) => {
-						// Role.findAll({
-						//     where:{
-						//         name:{
-						//             [Op.ord]:req.body.roles
-						//         }
-						//     }
+						role.map((x) => {
+							UserRole.create({
+								user_id: user.id,
+								role_id: x.id,
+							});
+						});
+						var token =
+							"Bearer " +
+							jwt.sign(
+								{
+									id: user.id,
+									email: user.email,
+								},
+								config.secret,
+								{
+									expiresIn: 86400, //24h expired
+								}
+							);
+
+						console.log(token);
 
 						res.status(200).send({
 							auth: true,
-							id: req.body.id,
+							error: null,
+							success: true,
+							userToken: token,
+							userInfo: {
+								name: user.name,
+								email: user.email,
+							},
 							message: "User registered successfully.",
 							error: null,
 						});

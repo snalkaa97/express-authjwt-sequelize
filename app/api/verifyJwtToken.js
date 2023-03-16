@@ -35,7 +35,7 @@ module.exports = {
 			});
 		}
 
-		jwt.verify(token, config.secret, (err, decoded) => {
+		jwt.verify(token, config.secret, async (err, decoded) => {
 			if (err) {
 				return res.status(500).send({
 					auth: false,
@@ -44,6 +44,19 @@ module.exports = {
 				});
 			}
 			req.userId = parseInt(decoded.id);
+			const user = await User.findOne({
+				where: {
+					id: decoded.id,
+					email: decoded.email
+				}
+			})
+			if(!user){
+				return res.status(404).send({
+					auth: false,
+					message: "User not found!",
+					errors: err,
+				});
+			}
 			next();
 		});
 	},
