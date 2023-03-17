@@ -4,6 +4,7 @@ const verifyJwtTokenController = require("../api").verifyJwtToken;
 
 const pegawaiRoute = require("./pegawai");
 const postRoute = require("./post");
+const userRoute = require("./user");
 
 module.exports = function (app) {
 	app.post(
@@ -19,6 +20,9 @@ module.exports = function (app) {
 	app.post("/api/auth/verifyToken", [verifyJwtTokenController.verifyToken], (req,res) => {
 		res.status(200).send({verifyToken:true})
 	})
+
+	//user
+	app.use("/api/user", userRoute);
 
 	//pegawai
 	app.use("/api/pegawai", pegawaiRoute);
