@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const sequelizePaginate = require('sequelize-paginate')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -15,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'user_id',
       });
 
-      User.belongsTo(models.Role,{
-        foreignKey: 'role_id',
+      User.hasMany(models.UserRole,{
+        foreignKey: 'user_id',
       })
     }
   }
@@ -30,5 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User',
   });
+  sequelizePaginate.paginate(User);
   return User;
+
 };
