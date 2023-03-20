@@ -8,7 +8,7 @@ const Op = db.Sequelize.Op;
 const config = require("../config/configRoles");
 
 module.exports = {
-	signup(req, res) {
+	async signup(req, res) {
 		Role.findAll({
 			where: {
 				name: {
@@ -33,7 +33,7 @@ module.exports = {
 					password: bcrypt.hashSync(req.body.password, 8),
 					// role_id: role.dataValues.id
 				})
-					.then((user) => {
+					.then(async(user) => {
 						role.map((x) => {
 							UserRole.create({
 								user_id: user.id,
@@ -52,10 +52,26 @@ module.exports = {
 									expiresIn: 86400, //24h expired
 								}
 							);
-
-						console.log(token);
-
-						res.status(200).send({
+							const roles = await User.findOne({
+								include: [
+									{
+										model: UserRole,
+										attributes: ["role_id"],
+										include: [
+											{
+												model: Role,
+												attributes: ["name"],
+											},
+										],
+									},
+								],
+								where: {
+									email: req.body.email,
+								},
+								attributes: ["id","name","email","password"]
+						})
+						console.log(roles);
+						return res.status(200).send({
 							auth: true,
 							error: null,
 							success: true,
@@ -63,11 +79,12 @@ module.exports = {
 							userInfo: {
 								name: user.name,
 								email: user.email,
+								role: roles.UserRoles
 							},
 							message: "User registered successfully.",
 							error: null,
 						});
-						return;
+
 						// })
 					})
 					.catch((err) => {
@@ -91,12 +108,25 @@ module.exports = {
 	signin(req, res) {
 		// console.log(req.body);
 		return User.findOne({
+			include: [
+				{
+					model: UserRole,
+					attributes: ["role_id"],
+					include: [
+						{
+							model: Role,
+							attributes: ["name"],
+						},
+					],
+				},
+			],
 			where: {
 				email: req.body.email,
 			},
+			attributes: ["id","name","email","password"]
 		})
 			.then((user) => {
-				// console.log(user);
+				console.log(user);
 				if (!user) {
 					return res.status(404).send({
 						auth: false,
@@ -144,6 +174,7 @@ module.exports = {
 					userInfo: {
 						name: user.name,
 						email: user.email,
+						role: user.UserRoles
 					},
 					message: "Error",
 					errors: null,
