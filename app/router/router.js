@@ -18,7 +18,7 @@ module.exports = function (app) {
 	app.post("/api/auth/signin", verifySignController.signin);
 
 	app.post("/api/auth/verifyToken", [verifyJwtTokenController.verifyToken], (req,res) => {
-		res.status(200).send({verifyToken:true})
+		res.status(200).send({verifyToken:true, role:req.role})
 	})
 
 	//user

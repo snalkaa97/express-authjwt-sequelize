@@ -45,150 +45,99 @@ module.exports = {
 			}
 			req.userId = parseInt(decoded.id);
 			const user = await User.findOne({
+				include: [
+					{
+						model: UserRole,
+						attributes: ["role_id"],
+						include: [
+							{
+								model: Role,
+								attributes: ["name"],
+							},
+						],
+					},
+				],
+				attributes: ["id","name","email","password"],
 				where: {
 					id: decoded.id,
-					email: decoded.email
-				}
-			})
-			if(!user){
+					email: decoded.email,
+				},
+			});
+			if (!user) {
 				return res.status(404).send({
 					auth: false,
 					message: "User not found!",
 					errors: err,
 				});
 			}
+			req.userId = parseInt(decoded.id);
+			req.role = user.UserRoles
 			next();
 		});
 	},
 
 	isAdmin(req, res, next) {
-		return (
-			UserRole.findAll({
-				include: [
-					{
-						model: Role,
-						attributes: ["id", "name"],
-						where: {
-							name: "ADMIN",
-						},
+		return UserRole.findAll({
+			include: [
+				{
+					model: Role,
+					attributes: ["id", "name"],
+					where: {
+						name: "ADMIN",
 					},
-				],
-				where: {
-					user_id: req.userId,
 				},
-			})
-				// return User.findOne({
-				// 	include: [
-				// 		{
-				// 			model: Role,
-				// 			attributes: ['id','name'],
-				// 			where: {
-				// 				name: 'ADMIN'
-				// 			}
-				// 		}
-				// 	],
-				// 	where: {
-				//         id: req.userId,
-				//     },
-				// })
-				.then((user) => {
-					if (user.length <= 0) {
-						res.status(500).send({
-							auth: false,
-							message: "Require Admin Role",
-						});
-						return;
-					}
-					next();
+			],
+			where: {
+				user_id: req.userId,
+			},
+		})
+			.then((user) => {
+				if (user.length <= 0) {
+					res.status(500).send({
+						auth: false,
+						message: "Require Admin Role",
+					});
 					return;
-				})
-				.catch((err) => {
-					console.error(err);
-				})
-		);
-		// User.findByPk(req.userId).then((user) => {
-		// 	user.getRoles().then((roles) => {
-		// 		for (let i = 0; i < roles.length; i++) {
-		// 			console.log(roles[i].name);
-		// 			if (roles[i].name.toUpperCase() === "ADMIN") {
-		// 				next();
-		// 				return;
-		// 			}
-		// 		}
-		// 		res.status(403).send({
-		// 			auth: false,
-		// 			message: "Error",
-		// 			message: "Require Admin Role",
-		// 		});
-		// 		return;
-		// 	});
-		// });
+				}
+				next();
+				return;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	},
 
 	isAdminAndUser(req, res, next) {
-		return (
-			UserRole.findAll({
-				include: [
-					{
-						model: Role,
-						attributes: ["id", "name"],
-						where: {
-							name: {
-								[Op.in]: ["ADMIN", "USER"],
-							},
+		return UserRole.findAll({
+			include: [
+				{
+					model: Role,
+					attributes: ["id", "name"],
+					where: {
+						name: {
+							[Op.in]: ["ADMIN", "USER"],
 						},
 					},
-				],
-				where: {
-					user_id: req.userId,
 				},
-			})
-				// return User.findOne({
-				// 	include: [
-				// 		{
-				// 			model: Role,
-				// 			attributes: ['id','name'],
-				// 			where: {
-				// 				name: 'ADMIN'
-				// 			}
-				// 		}
-				// 	],
-				// 	where: {
-				//         id: req.userId,
-				//     },
-				// })
-				.then((user) => {
-					console.log(user);
-					if (user.length <= 0) {
-						res.status(403).send({
-							auth: false,
-							message: "Require Admin Role",
-						});
-						return;
-					}
-					next();
+			],
+			where: {
+				user_id: req.userId,
+			},
+		})
+			.then((user) => {
+				console.log(user);
+				if (user.length <= 0) {
+					res.status(403).send({
+						auth: false,
+						message: "Require Admin Role",
+					});
 					return;
-				})
-				.catch((err) => {
-					console.error(err);
-				})
-		);
-		// User.findByPk(req.userId).then((user) => {
-		// 	user.getRoles().then((roles) => {
-		// 		for (let i = 0; i < roles.length; i++) {
-		// 			console.log(roles[i].name);
-		// 			if (roles[i].name.toUpperCase() === "ADMIN") {
-		// 				next();
-		// 				return;
-		// 			}
-		// 		}
-		// 		res.status(403).send({
-		// 			auth: false,
-		// 			message: "Error",
-		// 			message: "Require Admin Role",
-		// 		});
-		// 		return;
-		// 	});
-		// });
+				}
+				next();
+				return;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	},
 };
