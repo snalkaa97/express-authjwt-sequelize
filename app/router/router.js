@@ -2,8 +2,6 @@ const verifySignUpController = require("../api").verifySignUp;
 const verifySignController = require("../api").verifySign;
 const verifyJwtTokenController = require("../api").verifyJwtToken;
 
-const pegawaiRoute = require("./pegawai");
-const postRoute = require("./post");
 const userRoute = require("./user");
 
 module.exports = function (app) {
@@ -23,10 +21,4 @@ module.exports = function (app) {
 
 	//user
 	app.use("/api/user", userRoute);
-
-	//pegawai
-	app.use("/api/pegawai", pegawaiRoute);
-
-	//posts
-	app.use("/api/post", postRoute);
 };
