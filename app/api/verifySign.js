@@ -30,7 +30,7 @@ module.exports = {
 				return User.create({
 					name: req.body.name,
 					email: req.body.email,
-					password: bcrypt.hashSync(req.body.password, 8),
+					password: bcrypt.hashSync(req.body.password || '12345678', 8),
 					// role_id: role.dataValues.id
 				})
 					.then(async(user) => {

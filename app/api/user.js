@@ -46,7 +46,8 @@ module.exports = {
 				],
                 page: page,
                 paginate: limit,
-				attributes: ['id','name','email']
+				attributes: ['id','name','email'],
+                order: [["id", "DESC"]],
 			});
             const totalPage = Math.ceil(users.total/limit)
             let paginations = paginates({current:page, max:totalPage})
@@ -86,10 +87,10 @@ module.exports = {
                 page: page,
                 paginate: limit,
 				where: where,
+                order: [["id", "DESC"]],
 			});
             const totalPage = Math.ceil(users.total/limit)
             let paginations = paginates({current:page, max:totalPage})
-            console.log(paginations);
             let pagination = {
                 first_page_url: 1,
                 from: users.total,
