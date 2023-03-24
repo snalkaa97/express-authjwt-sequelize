@@ -9,5 +9,10 @@ route.get(
 	userController.getUsers
 );
 
+route.put('/:id', [verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin], userController.updateUser)
+
+
+route.delete('/:id', [verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin], userController.deleteUser)
+
 
 module.exports = route;

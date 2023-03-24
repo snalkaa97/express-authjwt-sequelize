@@ -51,7 +51,6 @@ module.exports = {
 			});
             const totalPage = Math.ceil(users.total/limit)
             let paginations = paginates({current:page, max:totalPage})
-            console.log(paginations);
             let pagination = {
                 first_page_url: 1,
                 from: users.total,
@@ -69,7 +68,6 @@ module.exports = {
 				: null;
 			name ? (where.name = name) : null;
 			email ? (where.email = email) : null;
-			console.log(where);
 			const users = await User.paginate({
 				include: [
 					{
@@ -102,4 +100,76 @@ module.exports = {
 			return res.status(200).send({data:users.docs, currentPage:users.pages, totalPage: Math.ceil(users.total/limit), total:users.total, pagination});
 		}
 	},
+	async updateUser(req, res){
+		const {id} = req.params;
+		const {name, email} = req.body;
+		const user = await User.findByPk(id);
+		if(!user){
+			return res.status(404).send({
+				message: 'user not found'
+			});
+		}
+		await User.update({ name: name, email: email}, {
+			where: {
+			  id: id
+			}
+		  })
+		.then(async()=>{
+			//delete role dahulu
+			await UserRole.destroy({
+				where: {
+					user_id: id
+				}
+			})
+			const roles = await Role.findAll({
+				where:{
+					name: {
+						[Op.in]: req.body.roles,
+					},
+				}
+			})
+			if(!roles.length>0){
+				return res.status(404).send({
+					message: 'role not found'
+				})
+			}
+			roles.map((role)=>{
+				UserRole.create({
+					user_id: user.id,
+					role_id: role.id,
+				});
+			})
+			return res.status(200).send({
+				data: user
+			})
+		})
+		.catch((err)=>{
+			console.log(err)
+			return res.status(500).send(err)
+		})
+	},
+
+	async deleteUser(req, res) {
+		const {id} = req.params
+		const user = await User.findByPk(id);
+		if(!user){
+			return res.status(404).send({
+				message: 'User not found'
+			})
+		}
+		await User.destroy({
+			where: {
+				id: id
+			}
+		})
+		.then(()=>{
+			return res.status(200).send({
+				data: user
+			})
+		})
+		.catch((err)=>{
+			console.log(err)
+			return res.status(500).send(err)
+		})
+	}
 };
