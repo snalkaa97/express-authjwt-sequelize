@@ -9,5 +9,10 @@ route.get(
 	userController.getUsers
 );
 
+route.put(
+	"/changeEmail",
+	[verifyJwtTokenController.verifyToken],
+	userController.changeEmail
+);
 
 module.exports = route;

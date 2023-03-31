@@ -20,7 +20,7 @@ module.exports = {
 		if (tokenHeader.split(" ")[0] !== "Bearer") {
 			return res.status(500).send({
 				auth: false,
-				message: "Error",
+				message: "Incorrect token format",
 				errors: "Incorrect token format",
 			});
 		}
@@ -30,7 +30,7 @@ module.exports = {
 		if (!token) {
 			return res.status(403).send({
 				auth: false,
-				message: "Error",
+				message: "No token provided",
 				errors: "No token provided",
 			});
 		}
@@ -39,7 +39,7 @@ module.exports = {
 			if (err) {
 				return res.status(500).send({
 					auth: false,
-					message: "Error",
+					message: err,
 					errors: err,
 				});
 			}
@@ -57,7 +57,7 @@ module.exports = {
 						],
 					},
 				],
-				attributes: ["id","name","email","password"],
+				attributes: ["id", "name", "email", "password"],
 				where: {
 					id: decoded.id,
 					email: decoded.email,
@@ -71,7 +71,7 @@ module.exports = {
 				});
 			}
 			req.userId = parseInt(decoded.id);
-			req.role = user.UserRoles
+			req.role = user.UserRoles;
 			next();
 		});
 	},

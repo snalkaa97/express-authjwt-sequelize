@@ -30,10 +30,10 @@ module.exports = {
 				return User.create({
 					name: req.body.name,
 					email: req.body.email,
-					password: bcrypt.hashSync(req.body.password || '12345678', 8),
+					password: bcrypt.hashSync(req.body.password || "12345678", 8),
 					// role_id: role.dataValues.id
 				})
-					.then(async(user) => {
+					.then(async (user) => {
 						role.map((x) => {
 							UserRole.create({
 								user_id: user.id,
@@ -52,24 +52,24 @@ module.exports = {
 									expiresIn: 86400, //24h expired
 								}
 							);
-							const roles = await User.findOne({
-								include: [
-									{
-										model: UserRole,
-										attributes: ["role_id"],
-										include: [
-											{
-												model: Role,
-												attributes: ["name"],
-											},
-										],
-									},
-								],
-								where: {
-									email: req.body.email,
+						const roles = await User.findOne({
+							include: [
+								{
+									model: UserRole,
+									attributes: ["role_id"],
+									include: [
+										{
+											model: Role,
+											attributes: ["name"],
+										},
+									],
 								},
-								attributes: ["id","name","email","password"]
-						})
+							],
+							where: {
+								email: req.body.email,
+							},
+							attributes: ["id", "name", "email", "password"],
+						});
 						console.log(roles);
 						return res.status(200).send({
 							auth: true,
@@ -79,7 +79,7 @@ module.exports = {
 							userInfo: {
 								name: user.name,
 								email: user.email,
-								role: roles.UserRoles
+								role: roles.UserRoles,
 							},
 							message: "User registered successfully.",
 							error: null,
@@ -123,7 +123,7 @@ module.exports = {
 			where: {
 				email: req.body.email,
 			},
-			attributes: ["id","name","email","password"]
+			attributes: ["id", "name", "email", "password"],
 		})
 			.then((user) => {
 				console.log(user);
@@ -133,7 +133,7 @@ module.exports = {
 						id: req.body.id,
 						accessToken: null,
 						userInfo: null,
-						message: "Error",
+						message: "User Not Found",
 						errors: "User Not Found.",
 					});
 				}
@@ -147,7 +147,7 @@ module.exports = {
 						id: req.body.id,
 						accessToken: null,
 						userInfo: null,
-						message: "Error",
+						message: "Invalid Password!",
 						errors: "Invalid Password!",
 					});
 				}
@@ -174,7 +174,7 @@ module.exports = {
 					userInfo: {
 						name: user.name,
 						email: user.email,
-						role: user.UserRoles
+						role: user.UserRoles,
 					},
 					message: "Error",
 					errors: null,

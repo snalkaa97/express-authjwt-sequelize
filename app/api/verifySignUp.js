@@ -13,7 +13,7 @@ module.exports = {
 				res.status(400).send({
 					auth: false,
 					id: req.body.id,
-					message: "Error",
+					message: "Email is already in use",
 					errors: "Email is already in use",
 				});
 				return;
@@ -34,7 +34,7 @@ module.exports = {
 					res.status(400).send({
 						auth: false,
 						id: req.body.id,
-						message: "Error",
+						message: "Does NOT exist Role = " + req.body.roles[i],
 						errors: "Does NOT exist Role = " + req.body.roles[i],
 					});
 					return;
