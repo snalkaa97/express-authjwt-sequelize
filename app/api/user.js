@@ -191,4 +191,70 @@ module.exports = {
 				return res.status(500).send(error.message);
 			});
 	},
+
+	async changeName(req, res) {
+		const { name } = req.body;
+		const id = req.userId;
+		try {
+			await User.update(
+				{ name },
+				{
+					where: { id },
+				}
+			);
+			console.log("Updated");
+			return res.status(200).send({ message: "success" });
+		} catch (err) {
+			return res.status(500).send({ message: "Fail to update user" });
+		}
+	},
+
+	async changePassword(req, res) {
+		console.log(req.body);
+		const { currentPassword, newPassword } = req.body;
+		const id = req.userId;
+
+		let user = await User.findByPk(id);
+		if (!user) {
+			return res.status(404).send({ message: "User not found" });
+		}
+
+		var passwordIsValid = bcrypt.compareSync(currentPassword, user.password);
+		if (!passwordIsValid) {
+			return res.status(500).send({
+				auth: false,
+				accessToken: null,
+				userInfo: null,
+				message: "Invalid Password!",
+				errors: "Invalid Password!",
+			});
+		}
+
+		try {
+			user.update(
+				{ password: bcrypt.hashSync(newPassword || "12345678", 8) },
+				{
+					where: { id },
+				}
+			);
+			user = await User.findOne({
+				where: { id },
+			});
+			var token =
+				"Bearer " +
+				jwt.sign(
+					{
+						id: user.id,
+						email: user.email,
+					},
+					config.secret,
+					{
+						expiresIn: 86400, //24h expired
+					}
+				);
+			return res.status(200).send({ message: "success", accesToken: token });
+		} catch (err) {
+			return res.status(500).send({ message: "Failed to update password" });
+		}
+	},
 };

@@ -15,4 +15,16 @@ route.put(
 	userController.changeEmail
 );
 
+route.put(
+	"/changeName",
+	[verifyJwtTokenController.verifyToken],
+	userController.changeName
+);
+
+route.put(
+	"/changePassword",
+	[verifyJwtTokenController.verifyToken],
+	userController.changePassword
+);
+
 module.exports = route;
