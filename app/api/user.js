@@ -30,11 +30,12 @@ function paginates({ current, max }) {
 }
 module.exports = {
 	async getUsers(req, res) {
+		console.log(req.query);
 		let { page } = req.query;
 		page = parseInt(page || 1);
 		let { limit } = req.query;
 		limit = parseInt(limit || 10);
-		if (!req.query.name && !req.query.email) {
+		if (!req.query.name && !req.query.email && !req.query.roles) {
 			const users = await User.paginate({
 				include: [
 					{
@@ -73,12 +74,14 @@ module.exports = {
 			});
 		} else {
 			let where = {};
-			let name = req.query.name ? { [Op.like]: `%${req.query.name}%` } : null;
+			let name = req.query.name ? { [Op.iLike]: `%${req.query.name}%` } : null;
 			let email = req.query.email
 				? { [Op.like]: `%${req.query.email}%` }
 				: null;
+			let role = req.query.roles ? { [Op.in]: req.query.roles } : null;
 			name ? (where.name = name) : null;
 			email ? (where.email = email) : null;
+			// role ? (where.role = role) : null;
 			console.log(where);
 			const users = await User.paginate({
 				include: [
@@ -89,6 +92,11 @@ module.exports = {
 							{
 								model: Role,
 								attributes: ["name"],
+								where: {
+									name: {
+										[Op.in]: req.query.roles || ["ADMIN", "USER"],
+									},
+								},
 							},
 						],
 					},
@@ -99,6 +107,7 @@ module.exports = {
 				where: where,
 				order: [["id", "DESC"]],
 			});
+			console.log(users);
 			const totalPage = Math.ceil(users.total / limit);
 			let paginations = paginates({ current: page, max: totalPage });
 			let pagination = {
