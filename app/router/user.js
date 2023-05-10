@@ -10,6 +10,18 @@ route.get(
 );
 
 route.put(
+	"/:id",
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
+	userController.updateUser
+);
+
+route.delete(
+	"/:id",
+	[verifyJwtTokenController.verifyToken, verifyJwtTokenController.isAdmin],
+	userController.deleteUser
+);
+
+route.put(
 	"/changeEmail",
 	[verifyJwtTokenController.verifyToken],
 	userController.changeEmail
